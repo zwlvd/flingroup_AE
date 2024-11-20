@@ -699,3 +699,23 @@ create table gen_table_column (
   update_time       datetime                                   comment '更新时间',
   primary key (column_id)
 ) engine=innodb auto_increment=1 comment = '代码生成业务表字段';
+
+-- ----------------------------
+-- 20、案例库表
+-- ----------------------------
+drop table if exists main_case;
+create table main_case(
+                          case_id           bigint(20)      not null auto_increment    comment '案例ID',
+                          case_name         varchar(30)     not null                   comment '案例名称',
+                          case_type         varchar(30)                                comment '案例类型',
+                          case_address      varchar(100)    default ''                 comment '案例地址',
+                          case_info         varchar(100)    default ''                 comment '案例介绍',
+                          case_image        varchar(100)                               comment '案例图片',
+                          case_video        varchar(100)                               comment '案例视频',
+                          create_by         varchar(64)     default ''                 comment '创建者',
+                          create_time       datetime                                   comment '创建时间',
+                          update_by         varchar(64)     default ''                 comment '更新者',
+                          update_time       datetime                                   comment '更新时间',
+                          remark            varchar(500)    default null               comment '备注',
+                          primary key (case_id)
+) engine=innodb auto_increment=100 comment = '案例库表';

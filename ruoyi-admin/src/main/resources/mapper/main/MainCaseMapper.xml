@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.main.mapper.MainCaseMapper">
+
+    <resultMap type="MainCase" id="MainCaseResult">
+        <result property="caseId"    column="case_id"    />
+        <result property="caseName"    column="case_name"    />
+        <result property="caseType"    column="case_type"    />
+        <result property="caseAddress"    column="case_address"    />
+        <result property="caseInfo"    column="case_info"    />
+        <result property="caseImage"    column="case_image"    />
+        <result property="caseVideo"    column="case_video"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectMainCaseVo">
+        select case_id, case_name, case_type, case_address, case_info, case_image, case_video, create_by, create_time, update_by, update_time, remark from main_case
+    </sql>
+
+    <select id="selectMainCaseList" parameterType="MainCase" resultMap="MainCaseResult">
+        <include refid="selectMainCaseVo"/>
+        <where>
+            <if test="caseName != null  and caseName != ''"> and case_name like concat('%', #{caseName}, '%')</if>
+            <if test="caseType != null  and caseType != ''"> and case_type = #{caseType}</if>
+            <if test="caseAddress != null  and caseAddress != ''"> and case_address = #{caseAddress}</if>
+            <if test="caseInfo != null  and caseInfo != ''"> and case_info = #{caseInfo}</if>
+            <if test="caseImage != null  and caseImage != ''"> and case_image = #{caseImage}</if>
+            <if test="caseVideo != null  and caseVideo != ''"> and case_video = #{caseVideo}</if>
+        </where>
+    </select>
+
+    <select id="selectMainCaseByCaseId" parameterType="Long" resultMap="MainCaseResult">
+        <include refid="selectMainCaseVo"/>
+        where case_id = #{caseId}
+    </select>
+
+    <insert id="insertMainCase" parameterType="MainCase" useGeneratedKeys="true" keyProperty="caseId">
+        insert into main_case
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="caseName != null and caseName != ''">case_name,</if>
+            <if test="caseType != null and caseType != ''">case_type,</if>
+            <if test="caseAddress != null">case_address,</if>
+            <if test="caseInfo != null">case_info,</if>
+            <if test="caseImage != null">case_image,</if>
+            <if test="caseVideo != null">case_video,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="caseName != null and caseName != ''">#{caseName},</if>
+            <if test="caseType != null and caseType != ''">#{caseType},</if>
+            <if test="caseAddress != null">#{caseAddress},</if>
+            <if test="caseInfo != null">#{caseInfo},</if>
+            <if test="caseImage != null">#{caseImage},</if>
+            <if test="caseVideo != null">#{caseVideo},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMainCase" parameterType="MainCase">
+        update main_case
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="caseName != null and caseName != ''">case_name = #{caseName},</if>
+            <if test="caseType != null and caseType != ''">case_type = #{caseType},</if>
+            <if test="caseAddress != null">case_address = #{caseAddress},</if>
+            <if test="caseInfo != null">case_info = #{caseInfo},</if>
+            <if test="caseImage != null">case_image = #{caseImage},</if>
+            <if test="caseVideo != null">case_video = #{caseVideo},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where case_id = #{caseId}
+    </update>
+
+    <delete id="deleteMainCaseByCaseId" parameterType="Long">
+        delete from main_case where case_id = #{caseId}
+    </delete>
+
+    <delete id="deleteMainCaseByCaseIds" parameterType="String">
+        delete from main_case where case_id in
+        <foreach item="caseId" collection="array" open="(" separator="," close=")">
+            #{caseId}
+        </foreach>
+    </delete>
+</mapper>
