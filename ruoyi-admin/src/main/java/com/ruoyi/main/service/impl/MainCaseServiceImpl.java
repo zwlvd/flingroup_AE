@@ -3,6 +3,7 @@ package com.ruoyi.main.service.impl;
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.ruoyi.main.mapper.MainCaseMapper;
 import com.ruoyi.main.domain.MainCase;
@@ -19,6 +20,9 @@ public class MainCaseServiceImpl implements IMainCaseService
 {
     @Autowired
     private MainCaseMapper mainCaseMapper;
+
+    @Value("${server.port}")
+    private String port;
 
     /**
      * 查询案例库
@@ -41,7 +45,16 @@ public class MainCaseServiceImpl implements IMainCaseService
     @Override
     public List<MainCase> selectMainCaseList(MainCase mainCase)
     {
-        return mainCaseMapper.selectMainCaseList(mainCase);
+        List<MainCase> query= mainCaseMapper.selectMainCaseList(mainCase);
+        String profilePath = "http://localhost:" + port ;
+
+        query.forEach(mainCaseItem -> {
+            if (mainCaseItem.getCaseVideo() != null) {
+                // 替换 `profile` 为实际路径
+                mainCaseItem.setCaseVideo(profilePath + mainCaseItem.getCaseVideo());
+            }
+        });
+        return query;
     }
 
     /**

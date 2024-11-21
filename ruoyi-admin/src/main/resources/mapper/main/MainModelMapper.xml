@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.main.mapper.MainModelMapper">
+
+    <resultMap type="MainModel" id="MainModelResult">
+        <result property="modelId"    column="model_id"    />
+        <result property="modelName"    column="model_name"    />
+        <result property="modelType"    column="model_type"    />
+        <result property="modelAddress"    column="model_address"    />
+        <result property="datasetName"    column="dataset_name"    />
+        <result property="modelInfo"    column="model_info"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectMainModelVo">
+        select model_id, model_name, model_type, model_address, dataset_name, model_info, create_by, create_time, update_by, update_time, remark from main_model
+    </sql>
+
+    <select id="selectMainModelList" parameterType="MainModel" resultMap="MainModelResult">
+        <include refid="selectMainModelVo"/>
+        <where>
+            <if test="modelName != null  and modelName != ''"> and model_name like concat('%', #{modelName}, '%')</if>
+            <if test="modelType != null  and modelType != ''"> and model_type = #{modelType}</if>
+        </where>
+    </select>
+
+    <select id="selectMainModelByModelId" parameterType="Long" resultMap="MainModelResult">
+        <include refid="selectMainModelVo"/>
+        where model_id = #{modelId}
+    </select>
+
+    <insert id="insertMainModel" parameterType="MainModel" useGeneratedKeys="true" keyProperty="modelId">
+        insert into main_model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="modelName != null and modelName != ''">model_name,</if>
+            <if test="modelType != null">model_type,</if>
+            <if test="modelAddress != null">model_address,</if>
+            <if test="datasetName != null">dataset_name,</if>
+            <if test="modelInfo != null">model_info,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="modelName != null and modelName != ''">#{modelName},</if>
+            <if test="modelType != null">#{modelType},</if>
+            <if test="modelAddress != null">#{modelAddress},</if>
+            <if test="datasetName != null">#{datasetName},</if>
+            <if test="modelInfo != null">#{modelInfo},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMainModel" parameterType="MainModel">
+        update main_model
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="modelName != null and modelName != ''">model_name = #{modelName},</if>
+            <if test="modelType != null">model_type = #{modelType},</if>
+            <if test="modelAddress != null">model_address = #{modelAddress},</if>
+            <if test="datasetName != null">dataset_name = #{datasetName},</if>
+            <if test="modelInfo != null">model_info = #{modelInfo},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where model_id = #{modelId}
+    </update>
+
+    <delete id="deleteMainModelByModelId" parameterType="Long">
+        delete from main_model where model_id = #{modelId}
+    </delete>
+
+    <delete id="deleteMainModelByModelIds" parameterType="String">
+        delete from main_model where model_id in
+        <foreach item="modelId" collection="array" open="(" separator="," close=")">
+            #{modelId}
+        </foreach>
+    </delete>
+</mapper>

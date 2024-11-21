@@ -719,3 +719,22 @@ create table main_case(
                           remark            varchar(500)    default null               comment '备注',
                           primary key (case_id)
 ) engine=innodb auto_increment=100 comment = '案例库表';
+
+-- ----------------------------
+-- 21、算法模型表
+-- ----------------------------
+drop table if exists main_model;
+create table main_model (
+                            model_id        bigint(20)      not null auto_increment    comment '算法模型ID',
+                            model_name      varchar(30)     not null                   comment '算法模型名称',
+                            model_type      varchar(30)                                comment '算法类型',
+                            model_address   varchar(100)                               comment '模型地址',
+                            dataset_name    varchar(100)                               comment '训练数据集',
+                            model_info      varchar(500)    default ''                 comment '模型情况',
+                            create_by       varchar(64)     default ''                 comment '创建者',
+                            create_time     datetime                                   comment '创建时间',
+                            update_by       varchar(64)     default ''                 comment '更新者',
+                            update_time     datetime                                   comment '更新时间',
+                            remark          varchar(500)    default null               comment '备注',
+                            primary key (model_id)
+) engine=innodb auto_increment=100 comment = '算法模型表';
