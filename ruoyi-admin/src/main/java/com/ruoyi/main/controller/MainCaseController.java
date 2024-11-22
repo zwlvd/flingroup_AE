@@ -70,6 +70,16 @@ public class MainCaseController extends BaseController
     }
 
     /**
+     * 获取案例库可播放视频
+     */
+    @PreAuthorize("@ss.hasPermi('main:case:query')")
+    @GetMapping(value = "/video/{caseId}")
+    public AjaxResult getVideoInfo(@PathVariable("caseId") Long caseId)
+    {
+        return success(mainCaseService.selectMainCaseVideoByCaseId(caseId));
+    }
+
+    /**
      * 新增案例库
      */
     @PreAuthorize("@ss.hasPermi('main:case:add')")

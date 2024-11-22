@@ -20,6 +20,14 @@ public interface IMainCaseService
     public MainCase selectMainCaseByCaseId(Long caseId);
 
     /**
+     * 查询案例库视频
+     *
+     * @param caseId 案例库主键
+     * @return 案例库
+     */
+    public MainCase selectMainCaseVideoByCaseId(Long caseId);
+
+    /**
      * 查询案例库列表
      * 
      * @param mainCase 案例库

@@ -37,6 +37,21 @@ public class MainCaseServiceImpl implements IMainCaseService
     }
 
     /**
+     * 查询案例库视频
+     *
+     * @param caseId 案例库主键
+     * @return 案例库
+     */
+    @Override
+    public MainCase selectMainCaseVideoByCaseId(Long caseId)
+    {
+        MainCase query= mainCaseMapper.selectMainCaseByCaseId(caseId);
+        String profilePath = "http://localhost:" + port ;
+        query.setCaseVideo(profilePath + query.getCaseVideo());
+        return query;
+    }
+
+    /**
      * 查询案例库列表
      * 
      * @param mainCase 案例库

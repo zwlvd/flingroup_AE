@@ -5,7 +5,7 @@
         <el-input v-model="queryParams.caseName" placeholder="请输入案例名称" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="案例类型" prop="caseType">
-        <el-input v-model="queryParams.aseTypes" placeholder="请输入案例类型" clearable @keyup.enter.native="handleQuery" />
+        <el-input v-model="queryParams.caseType" placeholder="请输入案例类型" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="案例介绍" prop="caseInfo">
         <el-input v-model="queryParams.caseInfo" placeholder="请输入案例介绍" clearable @keyup.enter.native="handleQuery" />
@@ -44,7 +44,7 @@
       <el-table-column label="案例介绍" align="center" prop="caseInfo" />
       <el-table-column label="案例图片" align="center" prop="caseImage">
         <template slot-scope="scope">
-          <image-preview :src="scope.row.caseImage" :width="50" :height="50" />
+          <image-preview :src="scope.row.caseImage" :width="100" :height="100" />
         </template>
       </el-table-column>
       <el-table-column label="案例视频" align="center" prop="caseVideo">
@@ -52,14 +52,16 @@
           <!-- 检查是否有视频URL -->
           <div v-if="scope.row.caseVideo">
             <!-- 使用 <video> 标签预览视频 -->
-            <video :src="scope.row.caseVideo" controls preload="metadata" width="100" height="60"
+            <video :src="scope.row.caseVideo" controls preload="metadata" width="200" height="120"
               style="cursor: pointer; border: 1px solid #ccc; border-radius: 4px;"
               @click.stop="openVideoDialog(scope.row.caseVideo)">
             </video>
-            <!-- 打印视频 URL -->
           </div>
           <!-- 如果没有视频，显示提示 -->
-          <span v-else>无视频</span>
+          <div v-else>
+            <img src="@/assets/404_images/404.png" alt="无视频" width="100" height="60"
+              style="border: 1px solid #ccc; border-radius: 4px; object-fit: cover;">
+          </div>
         </template>
       </el-table-column>
 
@@ -86,8 +88,8 @@
         <el-form-item label="案例地址" prop="caseAddress">
           <el-input v-model="form.caseAddress" placeholder="请输入案例地址" />
         </el-form-item>
-        <el-form-item label="案例类型" prop="caseAddress">
-          <el-input v-model="form.caseAddress" placeholder="请输入案例类型" />
+        <el-form-item label="案例类型" prop="caseType">
+          <el-input v-model="form.caseType" placeholder="请输入案例类型" />
         </el-form-item>
         <el-form-item label="案例介绍" prop="caseInfo">
           <el-input v-model="form.caseInfo" placeholder="请输入案例介绍" />
@@ -108,11 +110,11 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="视频预览" :visible.sync="videoDialogVisible" width="800px" append-to-body @close="closeVideoDialog">
+    <!-- <el-dialog title="视频预览" :visible.sync="videoDialogVisible" width="800px" append-to-body @close="closeVideoDialog">
       <video v-if="currentVideoUrl" :src="currentVideoUrl" controls autoplay
         style="width: 100%; height: auto; border-radius: 4px;">
       </video>
-    </el-dialog>
+    </el-dialog> -->
 
 
   </div>
@@ -154,8 +156,8 @@ export default {
         caseImage: null,
         caseVideo: null,
       },
-      videoDialogVisible: false, // 控制视频预览对话框的显示
-      currentVideoUrl: "http://localhost:18080/profile/upload/2024/11/21/视频1_20241121194648A002.mov", // 当前视频的 URL
+      // videoDialogVisible: false, // 控制视频预览对话框的显示
+      // currentVideoUrl: "http://localhost:18080/profile/upload/2024/11/21/视频1_20241121194648A002.mov", // 当前视频的 URL
       // 表单参数
       form: {},
       // 表单校验

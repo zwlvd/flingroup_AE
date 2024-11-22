@@ -17,6 +17,15 @@ export function getCase(caseId) {
   })
 }
 
+// 查询视频可播放的案例库详细
+export function getVideoCase(caseId) {
+  return request({
+    url: '/main/case/video/' + caseId,
+    method: 'get'
+  })
+}
+
+
 // 新增案例库
 export function addCase(data) {
   return request({
