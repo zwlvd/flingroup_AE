@@ -706,8 +706,8 @@ create table gen_table_column (
 drop table if exists main_case;
 create table main_case(
                           case_id           bigint(20)      not null auto_increment    comment '案例ID',
-                          case_name         varchar(30)     not null                   comment '案例名称',
-                          case_type         varchar(30)                                comment '案例类型',
+                          case_name         varchar(100)     not null                   comment '案例名称',
+                          case_type         varchar(100)                                comment '案例类型',
                           case_address      varchar(100)    default ''                 comment '案例地址',
                           case_info         varchar(100)    default ''                 comment '案例介绍',
                           case_image        varchar(100)                               comment '案例图片',
