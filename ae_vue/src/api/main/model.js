@@ -16,6 +16,13 @@ export function getModel(modelId) {
     method: 'get'
   })
 }
+// 查询算法模型详细
+export function getCamera() {
+  return request({
+    url: '/main/camera/image',
+    method: 'get'
+  })
+}
 
 // 新增算法模型
 export function addModel(data) {

@@ -14,6 +14,13 @@
                 <video ref="liveVideo" controls :src="liveVideoSrc"></video>
                 <p>实时检测视频</p>
             </div>
+            <!-- 摄像头视频区域 -->
+            <div class="video-box" v-if="formData.videofield === 4">
+                <div class="camera-stream">
+                    <img :src="cameraStreamUrl" alt="Camera Stream" />
+                    <p v-if="!cameraStreamUrl">正在加载摄像头画面...</p>
+                </div>
+            </div>
             <!-- 案例视频和检测视频同时播放 -->
             <div class="video-box" v-if="formData.videofield == 3">
                 <div class="dual-video">
@@ -70,7 +77,7 @@
                 <!-- 视频选择 -->
                 <el-form ref="elForm" :model="formData" :rules="rules" size="large" label-width="100px">
                     <el-form-item label="视频选择" prop="videofield">
-                        <el-radio-group v-model="formData.videofield" size="large">
+                        <el-radio-group v-model="formData.videofield" size="large" @change="handleVideoChange">
                             <el-radio v-for="(item, index) in videofieldOptions" :key="index" :label="item.value"
                                 :disabled="item.disabled">{{ item.label }}</el-radio>
                         </el-radio-group>
@@ -124,7 +131,8 @@ export default {
             liveVideoSrc: 'http://localhost:18080/profile/upload/2024/11/21/视频1_20241121194430A001.mov', // 实时检测视频的路径
             newWindow: null, // 保存新窗口引用
             selectedCase: null, // 当前选择的案例视频
-
+            // 摄像头视频流
+            cameraStreamUrl: 'http://localhost:18080/main/camera/stream', // 摄像头 MJPEG 流地址
             // 检测算法列表
             selectedAlgorithm: null, // 当前选择的算法
 
@@ -165,7 +173,8 @@ export default {
             videofieldOptions: [
                 { label: "案例视频", value: 1 },
                 { label: "检测视频", value: 2 },
-                { label: "案例+检测视频", value: 3 }
+                { label: "案例+检测视频", value: 3 },
+                { label: "摄像头视频", value: 4 }
             ],
         };
     },
@@ -179,6 +188,18 @@ export default {
             const video = this.$refs.caseVideo;
             video.src = this.selectedCase;
             video.play();
+        },
+        // 处理视频选择变化
+        handleVideoChange(newVal) {
+            // 当视频选择变化时停止当前视频流
+            if (newVal !== 4) {
+                // 如果选择的不是摄像头流，停止摄像头视频
+                this.cameraStreamUrl = ''; // 清空摄像头视频流
+            }
+            // 如果选择的是摄像头流，则重新加载视频流
+            if (newVal === 4) {
+                this.cameraStreamUrl = 'http://localhost:18080/main/camera/stream'; // 重新加载摄像头视频流
+            }
         },
         // 检测算法改变事件
         onAlgorithmChange() {
@@ -219,6 +240,7 @@ export default {
 
         // 打开新窗口并同步播放
         openVideoInNewWindow(videoSrc) {
+            console.log("111");
             const newWindow = window.open('', '_blank', 'width=800,height=600');
             newWindow.document.write(`
                 <html>
@@ -230,25 +252,49 @@ export default {
                     </body>
                 </html>
             `);
+            console.log("222");
             newWindow.onload = () => {
+                console.log("新窗口已加载，准备同步播放");
                 const video = this.$refs.caseVideo; // 获取父窗口的视频元素
                 const newVideo = newWindow.document.getElementById('newVideo'); // 获取新窗口的视频元素
                 this.newWindow = { videoElement: newVideo }; // 保存新窗口的视频元素引用
 
-                // 每秒同步一次视频播放进度
-                setInterval(() => {
-                    if (!newVideo || !video) return;
+                // 确保新视频加载完成再播放
+                newVideo.oncanplay = () => {
+                    console.log("新窗口视频准备好播放");
+                    // 监听来自新窗口的消息
+                    newWindow.addEventListener('message', (event) => {
+                        if (event.origin !== window.origin) return; // 安全检查消息来源
+                        const data = event.data;
 
-                    const currentTime = video.currentTime; // 获取父窗口的视频播放时间
-                    const isPlaying = !video.paused; // 获取父窗口视频是否在播放
+                        if (data.type === 'syncVideo') {
+                            newVideo.currentTime = data.currentTime; // 同步时间
+                            if (data.isPlaying) {
+                                newVideo.play(); // 同步播放
+                            } else {
+                                newVideo.pause(); // 同步暂停
+                            }
+                        }
+                    });
 
-                    // 向新窗口发送同步播放数据
-                    newWindow.postMessage({
-                        type: 'syncVideo',
-                        currentTime: currentTime,
-                        isPlaying: isPlaying
-                    }, '*');
-                }, 1000); // 每秒同步一次
+                    // 每秒同步一次视频播放进度
+                    setInterval(() => {
+                        if (!newVideo || !video) return;
+
+                        const currentTime = video.currentTime; // 获取父窗口的视频播放时间
+                        const isPlaying = !video.paused; // 获取父窗口视频是否在播放
+
+                        // 向新窗口发送同步播放数据
+                        console.log(`同步播放状态：当前时间 ${currentTime}s，播放状态: ${isPlaying ? "播放" : "暂停"}`);
+
+                        // 向新窗口发送同步播放数据
+                        newWindow.postMessage({
+                            type: 'syncVideo',
+                            currentTime: currentTime,
+                            isPlaying: isPlaying
+                        }, '*');
+                    }, 1000); // 每秒同步一次
+                };
             };
         },
 
@@ -266,8 +312,8 @@ export default {
                         const video = this.$refs.caseVideo;
                         video.src = this.caseVideoSrc;
                         video.play();
-                                        // 打开新窗口并播放视频
-                                        this.openVideoInNewWindow(this.caseVideoSrc);
+                        // 打开新窗口并播放视频
+                        this.openVideoInNewWindow(this.caseVideoSrc);
                     } else {
                         console.error('获取案例详情失败:', response.msg);
                     }
@@ -462,5 +508,21 @@ export default {
 /* 标题居中样式 */
 .el-descriptions__title {
     text-align: center;
+}
+
+.camera-stream {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.camera-stream img {
+  width: 100%; /* 自适应宽度 */
+  height: auto; /* 保持比例 */
+  max-width: 100%; /* 限制最大宽度 */
+  max-height: 100%; /* 限制最大高度 */
+  object-fit: contain; /* 确保视频保持比例，不会拉伸 */
 }
 </style>
